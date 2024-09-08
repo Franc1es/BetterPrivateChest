@@ -1,0 +1,11 @@
+name: BetterPrivateChest
+version: '1.0'
+main: dev.francies.betterPrivateChest.BetterPrivateChest
+api-version: '1.21'
+prefix: BTPChest
+authors: [ Francies ]
+website: https://franciesdev.it
+
+permissions:
+  btpchest.admin:
+    default: op
