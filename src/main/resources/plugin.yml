@@ -5,7 +5,10 @@ api-version: '1.21'
 prefix: BTPChest
 authors: [ Francies ]
 website: https://franciesdev.it
+softdepend: [Vault]
 
 permissions:
   btpchest.admin:
+    default: op
+  btpchest.use:
     default: op

@@ -1,14 +1,15 @@
 package dev.francies.betterPrivateChest.listeners;
 
-
 import dev.francies.betterPrivateChest.BetterPrivateChest;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.InventoryHolder;
 
 public class HopperProtection implements Listener {
@@ -19,29 +20,49 @@ public class HopperProtection implements Listener {
     }
 
     @EventHandler
-    public void onHopperMoveItem(InventoryMoveItemEvent event) {
-        InventoryHolder destinationHolder = event.getDestination().getHolder();
-        InventoryHolder sourceHolder = event.getSource().getHolder();
+    public void onBlockPlace(BlockPlaceEvent event) {
 
-        // Controlla se la destinazione è una chest privata
-        if (destinationHolder instanceof Chest) {
-            Chest chest = (Chest) destinationHolder;
-            Sign sign = findAttachedSign(chest);
-            if (sign != null && sign.getLine(0).equalsIgnoreCase(ChatColor.RED + "ʙᴀᴜʟᴇ ᴘʀɪᴠᴀᴛᴏ")) {
-                event.setCancelled(true);
-                return;
-            }
-        }
+        if (event.getBlockPlaced().getType() == Material.HOPPER) {
+            Block blockAbove = event.getBlock().getRelative(0, 1, 0);
 
-        // Controlla se la sorgente è una chest privata
-        if (sourceHolder instanceof Chest) {
-            Chest chest = (Chest) sourceHolder;
-            Sign sign = findAttachedSign(chest);
-            if (sign != null && sign.getLine(0).equalsIgnoreCase(ChatColor.RED + "ʙᴀᴜʟᴇ ᴘʀɪᴠᴀᴛᴏ")) {
-                event.setCancelled(true);
+
+            if (blockAbove.getState() instanceof Chest) {
+                Chest chest = (Chest) blockAbove.getState();
+                Sign sign = findAttachedSign(chest);
+
+                Chest doubleChest = findDoubleChest(chest);
+                if (sign == null && doubleChest != null) {
+                    sign = findAttachedSign(doubleChest);
+                }
+
+
+                if (sign != null && sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString( "private-chest-id")))) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.noHoppers")));
+                }
             }
         }
     }
+
+
+    private Chest findDoubleChest(Chest chest) {
+        InventoryHolder holder = chest.getInventory().getHolder();
+        if (holder instanceof DoubleChest) {
+            DoubleChest doubleChest = (DoubleChest) holder;
+
+            Chest leftChest = (Chest) doubleChest.getLeftSide();
+            Chest rightChest = (Chest) doubleChest.getRightSide();
+
+            if (!leftChest.getLocation().equals(chest.getLocation())) {
+                return leftChest;
+            } else {
+                return rightChest;
+            }
+        }
+
+        return null;
+    }
+
 
     private Sign findAttachedSign(Chest chest) {
         Block[] neighbors = {
@@ -54,7 +75,7 @@ public class HopperProtection implements Listener {
         for (Block neighbor : neighbors) {
             if (neighbor.getState() instanceof Sign) {
                 Sign sign = (Sign) neighbor.getState();
-                if (sign.getLine(0).equalsIgnoreCase(ChatColor.RED + "ʙᴀᴜʟᴇ ᴘʀɪᴠᴀᴛᴏ")) {
+                if (sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString( "private-chest-id")))) {
                     return sign;
                 }
             }

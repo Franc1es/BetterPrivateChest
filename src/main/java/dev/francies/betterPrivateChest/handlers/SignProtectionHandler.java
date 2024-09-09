@@ -19,31 +19,53 @@ public class SignProtectionHandler implements Listener {
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
         Sign sign = (Sign) event.getBlock().getState();
-        String[] lines = event.getLines();
+        String[] originalLines = sign.getLines();
+        String[] newLines = event.getLines();
 
-        // Verifica se è il cartello "ʙᴀᴜʟᴇ ᴘʀɪᴠᴀᴛᴏ"
-        if (!ChatColor.stripColor(sign.getLine(0)).equalsIgnoreCase("ʙᴀᴜʟᴇ ᴘʀɪᴠᴀᴛᴏ")) {
-            return; // Esci se non è un cartello privato
+        if (!ChatColor.translateAlternateColorCodes('&', originalLines[0]).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString( "private-chest-id")))) {
+            return;
         }
 
-        // Solo il proprietario può modificare le righe 2 e 3
-        if (player.getName().equalsIgnoreCase(ChatColor.stripColor(sign.getLine(1)))) {
-            // Mantieni inalterate le righe 0 e 1
-            event.setLine(0, sign.getLine(0)); // Mantieni la riga 0 (ʙᴀᴜʟᴇ ᴘʀɪᴠᴀᴛᴏ)
-            event.setLine(1, sign.getLine(1)); // Mantieni la riga 1 (nome del proprietario)
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.cannotChange")));
-            // Permetti al proprietario di modificare solo le righe 2 e 3
-            if (!lines[2].isEmpty()) {
-                event.setLine(2, ChatColor.AQUA + ChatColor.stripColor(lines[2])); // Colora sempre la riga 2 in Aqua
+        if (player.getName().equalsIgnoreCase(ChatColor.stripColor(originalLines[1]))) {
+            boolean isLine0Modified = !newLines[0].equals(originalLines[0]);
+            boolean isLine1Modified = !newLines[1].equals(originalLines[1]);
+
+            if (isLine0Modified || isLine1Modified) {
+                event.setLine(0, originalLines[0]);
+                event.setLine(1, originalLines[1]);
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.cannotChange")));
             }
 
-            if (!lines[3].isEmpty()) {
-                event.setLine(3, ChatColor.AQUA + ChatColor.stripColor(lines[3])); // Colora sempre la riga 3 in Aqua
+            String line2 = ChatColor.stripColor(newLines[2]);
+            String line3 = ChatColor.stripColor(newLines[3]);
+
+            if (line2.isEmpty() && line3.isEmpty()) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.twoMorePlayers")));
+            } else {
+                if (line2.isEmpty()) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.oneMorePlayer")));
+                } else {
+                    event.setLine(2, ChatColor.AQUA + line2);
+                }
+
+                if (line3.isEmpty()) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.oneMorePlayer")));
+                } else {
+
+                    if (line2.equalsIgnoreCase(line3)) {
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.sameName")));
+                        event.setLine(3, ChatColor.AQUA + line3);
+                        event.setLine(2, ChatColor.AQUA + line2);
+                    } else {
+                        event.setLine(3, ChatColor.AQUA + line3);
+                        event.setLine(2, ChatColor.AQUA + line2);
+                    }
+                }
             }
         } else {
-            // Blocca le modifiche a tutte le righe se non sei il proprietario
             event.setCancelled(true);
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.cannotChange")));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.cannotModify").replace("%owner%", ChatColor.stripColor(originalLines[1]))));
         }
     }
+
 }
