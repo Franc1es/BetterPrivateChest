@@ -14,6 +14,7 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
@@ -144,13 +145,17 @@ public final class BetterPrivateChest extends JavaPlugin {
                 String currentVersion = this.getDescription().getVersion();
 
                 if (!currentVersion.equals(latestVersion)) {
-                    getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +" &eA newer version is available: &f" + latestVersion));
-                    getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&3Download link 1: &f" + downloadUrl1));
-                    getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&bDownload link 1: &f" + downloadUrl2));
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (player.hasPermission("btpchest.admin")) {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +" &eA newer version is available: &f" + latestVersion));
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&3Download link 1: &f" + downloadUrl1));
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&bDownload link 1: &f" + downloadUrl2));
+                        }
+                    }
+
                 }
 
             } catch (Exception e) {
-                getServer().getConsoleSender().sendMessage("§cErrore durante il controllo aggiornamenti.");
                 e.printStackTrace();
             }
         }, 0L, updateInterval * 20L);
