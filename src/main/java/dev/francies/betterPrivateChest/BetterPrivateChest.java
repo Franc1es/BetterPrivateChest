@@ -8,6 +8,9 @@ import dev.francies.betterPrivateChest.listeners.PistonProtection;
 import dev.francies.betterPrivateChest.listeners.PrivateChestProtection;
 import dev.francies.betterPrivateChest.utils.DataFile;
 import net.milkbowl.vault.economy.Economy;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SingleLineChart;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +22,10 @@ public final class BetterPrivateChest extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        int pluginId = 23325;
+        Metrics metrics = new Metrics(this, pluginId);
+
+        metrics.addCustomChart(new SingleLineChart("players", () -> Bukkit.getOnlinePlayers().size()));
         long t = System.currentTimeMillis();
         if (!setupEconomy()) {
             getLogger().severe("YOU DON'T HAVE VAULT PLUGIN!");

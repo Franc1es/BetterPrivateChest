@@ -1,0 +1,23 @@
+DEFAULT CONFIG.YML
+prefix-private: "&7[&6BTPRIVATECHEST&7] "
+private-chest-id: "&6&lPRIVATE CHEST"
+enable-payment: true
+chest-price: 10000.0
+
+private-chest:
+  noPermission: "&cYou cannot open %owner%'s chest, ask him to add you in the sign" # %owner%
+  oneMorePlayer: "&cYou can add 1 more name to your private chest"
+  twoMorePlayers: "&cYou can add 2 more names to your private chest"
+  success: "&aYou have successfully created a private chest!"
+  break: "&cYou cannot break it!"
+  cannotChange: "&eYou can't change the first two lines, you can only break and replace the sign!"
+  cannotCreate: "&cYou don't have the permission to create a &eprivate chest"
+  cannotModify: "&cYou can't change the &e%owner%&c's private chest sign!" # %owner%
+  sameName: "&eAttention! You have already add that name in the sign"
+  noHoppers: "&cYou cannot place an hopper here!"
+  insufficient-funds: "&cYou do not have enough money to create a private chest."
+  chest-purchased: "&aYou have been charged %amount% for creating a private chest." # %amount%
+
+PERMISSIONS
+btpchest.use: can create a private chest
+btpchest.admin: can modify, open and destroy every private chest
