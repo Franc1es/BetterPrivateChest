@@ -1,5 +1,7 @@
 package dev.francies.betterPrivateChest;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dev.francies.betterPrivateChest.handlers.SignCreationHandler;
 import dev.francies.betterPrivateChest.handlers.SignProtectionHandler;
 import dev.francies.betterPrivateChest.listeners.ExplodeProtection;
@@ -11,17 +13,26 @@ import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.json.simple.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.Level;
 
 public final class BetterPrivateChest extends JavaPlugin {
     private DataFile dataFile;
     public static Economy econ = null;
-
+    private final String versionUrl = "https://www.franciesdev.it/api/checker.json";
+    int updateInterval = getConfig().getInt("update-check-interval", 86400);
     @Override
     public void onEnable() {
+
+        checkForUpdates();
         int pluginId = 23325;
         Metrics metrics = new Metrics(this, pluginId);
 
@@ -101,5 +112,47 @@ public final class BetterPrivateChest extends JavaPlugin {
         for (String line : lines) {
             this.getLogger().info(line);
         }
+    }
+    public void checkForUpdates() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+
+            try {
+
+                URL url = new URL(versionUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder content = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    content.append(inputLine);
+                }
+
+                in.close();
+                connection.disconnect();
+
+
+                JsonObject json = JsonParser.parseString(content.toString()).getAsJsonObject();
+
+
+                String latestVersion = json.get("version").getAsString();
+                String downloadUrl1 = json.get("downloadUrl1").getAsString();
+                String downloadUrl2 = json.get("downloadUrl2").getAsString();
+
+
+                String currentVersion = this.getDescription().getVersion();
+
+                if (!currentVersion.equals(latestVersion)) {
+                    getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +" &eA newer version is available: &f" + latestVersion));
+                    getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&3Download link 1: &f" + downloadUrl1));
+                    getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&bDownload link 1: &f" + downloadUrl2));
+                }
+
+            } catch (Exception e) {
+                getServer().getConsoleSender().sendMessage("§cErrore durante il controllo aggiornamenti.");
+                e.printStackTrace();
+            }
+        }, 0L, updateInterval * 20L);
     }
 }
