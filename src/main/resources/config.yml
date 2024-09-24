@@ -10,7 +10,6 @@ prefix-private: "&7[&6BTPRIVATECHEST&7] "
 private-chest-id: "&6&lPRIVATE CHEST"
 enable-payment: true
 chest-price: 10000.0
-update-check-interval: 43200 # seconds, empty = 1 day
 
 private-chest:
   noPermission: "&cYou cannot open %owner%'s chest, ask him to add you in the sign" # %owner%

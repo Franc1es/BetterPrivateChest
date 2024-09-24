@@ -4,10 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.francies.betterPrivateChest.handlers.SignCreationHandler;
 import dev.francies.betterPrivateChest.handlers.SignProtectionHandler;
-import dev.francies.betterPrivateChest.listeners.ExplodeProtection;
-import dev.francies.betterPrivateChest.listeners.HopperProtection;
-import dev.francies.betterPrivateChest.listeners.PistonProtection;
-import dev.francies.betterPrivateChest.listeners.PrivateChestProtection;
+import dev.francies.betterPrivateChest.listeners.*;
 import dev.francies.betterPrivateChest.utils.DataFile;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
@@ -17,7 +14,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -28,12 +24,9 @@ import java.util.logging.Level;
 public final class BetterPrivateChest extends JavaPlugin {
     private DataFile dataFile;
     public static Economy econ = null;
-    private final String versionUrl = "https://www.franciesdev.it/api/checker.json";
-    int updateInterval = getConfig().getInt("update-check-interval", 86400);
+    private final String versionUrl = "https://www.francescoferrara.it/api/betterprivatechest.json";
     @Override
     public void onEnable() {
-
-        checkForUpdates();
         int pluginId = 23325;
         Metrics metrics = new Metrics(this, pluginId);
 
@@ -56,7 +49,7 @@ public final class BetterPrivateChest extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ExplodeProtection(this), this);
         getServer().getPluginManager().registerEvents(new SignProtectionHandler(this), this);
         getServer().getPluginManager().registerEvents(new SignCreationHandler(this, dataFile), this);
-
+        getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
         this.getLogger().log(Level.INFO, "_________________________");
         this.getLogger().log(Level.INFO, "Loaded in " + (System.currentTimeMillis() - t) + "ms");
         this.getLogger().log(Level.INFO, "_________________________");
@@ -104,9 +97,6 @@ public final class BetterPrivateChest extends JavaPlugin {
     }
 
 
-    public DataFile getDataFile() {
-        return dataFile;
-    }
 
     public void logAsciiArt() {
         String[] lines = printImage().split("\n");
@@ -114,8 +104,7 @@ public final class BetterPrivateChest extends JavaPlugin {
             this.getLogger().info(line);
         }
     }
-    public void checkForUpdates() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+    public void checkForUpdates(Player player) {
 
             try {
 
@@ -145,19 +134,16 @@ public final class BetterPrivateChest extends JavaPlugin {
                 String currentVersion = this.getDescription().getVersion();
 
                 if (!currentVersion.equals(latestVersion)) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (player.hasPermission("btpchest.admin")) {
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +" &eA newer version is available: &f" + latestVersion));
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&3Download link 1: &f" + downloadUrl1));
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&bDownload link 1: &f" + downloadUrl2));
-                        }
+                    if (player.hasPermission("btpchest.admin")) {
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +" &eA newer version is available: &f" + latestVersion));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&bDownload link 1: &f" + downloadUrl1));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&bDownload link 2: &f" + downloadUrl2));
                     }
-
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 0L, updateInterval * 20L);
     }
+
 }
