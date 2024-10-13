@@ -10,6 +10,7 @@ prefix-private: "&7[&6BTPRIVATECHEST&7] "
 private-chest-id: "&6&lPRIVATE CHEST"
 enable-payment: true
 chest-price: 10000.0
+protection-radius: 12 # Block the place of anchors and crystals
 
 private-chest:
   noPermission: "&cYou cannot open %owner%'s chest, ask him to add you in the sign" # %owner%
@@ -24,3 +25,4 @@ private-chest:
   noHoppers: "&cYou cannot place an hopper here!"
   insufficient-funds: "&cYou do not have enough money to create a private chest."
   chest-purchased: "&aYou have been charged %amount% for creating a private chest." # %amount%
+  block-place-denied-message: "&cYou cannot place %block% near a private chest!"  # %block%

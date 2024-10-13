@@ -50,6 +50,7 @@ public final class BetterPrivateChest extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SignProtectionHandler(this), this);
         getServer().getPluginManager().registerEvents(new SignCreationHandler(this, dataFile), this);
         getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
+        getServer().getPluginManager().registerEvents(new CrystalAnchorPlaceEvent(this), this);
         this.getLogger().log(Level.INFO, "_________________________");
         this.getLogger().log(Level.INFO, "Loaded in " + (System.currentTimeMillis() - t) + "ms");
         this.getLogger().log(Level.INFO, "_________________________");
@@ -128,7 +129,6 @@ public final class BetterPrivateChest extends JavaPlugin {
 
                 String latestVersion = json.get("version").getAsString();
                 String downloadUrl1 = json.get("downloadUrl1").getAsString();
-                String downloadUrl2 = json.get("downloadUrl2").getAsString();
 
 
                 String currentVersion = this.getDescription().getVersion();
@@ -137,7 +137,6 @@ public final class BetterPrivateChest extends JavaPlugin {
                     if (player.hasPermission("btpchest.admin")) {
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +" &eA newer version is available: &f" + latestVersion));
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&bDownload link 1: &f" + downloadUrl1));
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("prefix-private") +"&bDownload link 2: &f" + downloadUrl2));
                     }
                 }
 
