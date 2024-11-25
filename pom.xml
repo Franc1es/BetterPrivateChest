@@ -6,7 +6,7 @@
 
     <groupId>dev.francies</groupId>
     <artifactId>betterprivatechest</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.5</version>
     <packaging>jar</packaging>
 
     <name>betterprivatechest</name>

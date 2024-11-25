@@ -2,10 +2,7 @@ package dev.francies.betterPrivateChest.listeners;
 
 import dev.francies.betterPrivateChest.BetterPrivateChest;
 import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
-import org.bukkit.block.Sign;
+import org.bukkit.block.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -26,15 +23,14 @@ public class ExplodeProtection implements Listener {
         List<Block> blocksToProtect = new ArrayList<>();
 
         for (Block block : event.blockList()) {
-            if (block.getState() instanceof Chest) {
-                Chest chest = (Chest) block.getState();
-                if (isChestProtected(chest)) {
+            if (block.getState() instanceof Container) {
+                Container container = (Container) block.getState();
+                if (isContainerProtected(container)) {
                     blocksToProtect.add(block);
 
-
-                    Chest doubleChest = findDoubleChest(chest);
-                    if (doubleChest != null) {
-                        blocksToProtect.add(doubleChest.getBlock());
+                    Container doubleContainer = findDoubleContainer(container);
+                    if (doubleContainer != null) {
+                        blocksToProtect.add(doubleContainer.getBlock());
                     }
                 }
             } else if (block.getState() instanceof Sign) {
@@ -48,54 +44,50 @@ public class ExplodeProtection implements Listener {
         event.blockList().removeAll(blocksToProtect);
     }
 
-
-    private boolean isChestProtected(Chest chest) {
-        Sign sign = findAttachedSign(chest);
-        return sign != null && sign.getLines()[0].equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString( "private-chest-id")));
+    private boolean isContainerProtected(Container container) {
+        Sign sign = findAttachedSign(container);
+        return sign != null && sign.getLines()[0].equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")));
     }
 
     private boolean isSignProtected(Sign sign) {
-        return sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString( "private-chest-id")));
+        return sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")));
     }
 
-    private Sign findAttachedSign(Chest chest) {
-        Block[] neighbors = {
-                chest.getBlock().getRelative(1, 0, 0),
-                chest.getBlock().getRelative(-1, 0, 0),
-                chest.getBlock().getRelative(0, 0, 1),
-                chest.getBlock().getRelative(0, 0, -1)
-        };
-
-        for (Block neighbor : neighbors) {
-            if (neighbor.getState() instanceof Sign) {
-                return (Sign) neighbor.getState();
-            }
-        }
-        return null;
-    }
-    private Chest findDoubleChest(Chest chest) {
-
-        InventoryHolder holder = chest.getInventory().getHolder();
-
+    private Container findDoubleContainer(Container container) {
+        InventoryHolder holder = container.getInventory().getHolder();
 
         if (holder instanceof DoubleChest) {
             DoubleChest doubleChest = (DoubleChest) holder;
 
+            Container leftContainer = (Container) doubleChest.getLeftSide();
+            Container rightContainer = (Container) doubleChest.getRightSide();
 
-            Chest leftChest = (Chest) doubleChest.getLeftSide();
-            Chest rightChest = (Chest) doubleChest.getRightSide();
-
-
-            if (!leftChest.getLocation().equals(chest.getLocation())) {
-                return leftChest;
+            if (!leftContainer.getLocation().equals(container.getLocation())) {
+                return leftContainer;
             } else {
-                return rightChest;
+                return rightContainer;
             }
         }
-
 
         return null;
     }
 
+    private Sign findAttachedSign(Container container) {
+        Block[] neighbors = {
+                container.getBlock().getRelative(1, 0, 0),
+                container.getBlock().getRelative(-1, 0, 0),
+                container.getBlock().getRelative(0, 0, 1),
+                container.getBlock().getRelative(0, 0, -1)
+        };
 
+        for (Block neighbor : neighbors) {
+            if (neighbor.getState() instanceof Sign) {
+                Sign sign = (Sign) neighbor.getState();
+                if (sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")))) {
+                    return sign;
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -3,8 +3,9 @@ package dev.francies.betterPrivateChest.listeners;
 import dev.francies.betterPrivateChest.BetterPrivateChest;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,12 +35,13 @@ public class CrystalAnchorPlaceEvent implements Listener {
 
         // Controlla se il blocco piazzato è un'Ancora della Rigenerazione
         if (placedBlock.getType() == Material.RESPAWN_ANCHOR) {
-            // Cerca i bauli vicini protetti
-            boolean protectedChestNearby = isProtectedChestNearby(placedBlock, protectionRadius);
+            // Cerca i contenitori vicini protetti
+            boolean protectedContainerNearby = isProtectedContainerNearby(placedBlock, protectionRadius);
 
-            if (protectedChestNearby) {
-                String message = ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("prefix-private") + " " +
-                                plugin.getConfig().getString("private-chest.block-place-denied-message"))
+            if (protectedContainerNearby) {
+                String message = ChatColor.translateAlternateColorCodes('&',
+                                plugin.getConfig().getString("prefix-private") + " " +
+                                        plugin.getConfig().getString("private-chest.block-place-denied-message"))
                         .replace("%block%", placedBlock.getType().toString().toLowerCase().replace("_", " "));
 
                 event.setCancelled(true);
@@ -60,11 +62,12 @@ public class CrystalAnchorPlaceEvent implements Listener {
                     // Raggio dal config
                     int protectionRadius = plugin.getConfig().getInt("protection-radius");
 
-                    boolean protectedChestNearby = isProtectedChestNearby(clickedBlock, protectionRadius);
+                    boolean protectedContainerNearby = isProtectedContainerNearby(clickedBlock, protectionRadius);
 
-                    if (protectedChestNearby) {
-                        String message = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " +
-                                        plugin.getConfig().getString("private-chest.block-place-denied-message"))
+                    if (protectedContainerNearby) {
+                        String message = ChatColor.translateAlternateColorCodes('&',
+                                        plugin.getConfig().getString("prefix-private") + " " +
+                                                plugin.getConfig().getString("private-chest.block-place-denied-message"))
                                 .replace("%block%", item.getType().toString().toLowerCase().replace("_", " "));
 
                         event.setCancelled(true);
@@ -75,8 +78,8 @@ public class CrystalAnchorPlaceEvent implements Listener {
         }
     }
 
-    // Metodo per verificare se c'è un baule protetto vicino al blocco
-    private boolean isProtectedChestNearby(Block block, int radius) {
+    // Metodo per verificare se c'è un contenitore protetto vicino al blocco
+    private boolean isProtectedContainerNearby(Block block, int radius) {
         Vector blockPosition = block.getLocation().toVector();
 
         // Controlla i blocchi all'interno del raggio specificato
@@ -85,10 +88,10 @@ public class CrystalAnchorPlaceEvent implements Listener {
                 for (int z = -radius; z <= radius; z++) {
                     Block nearbyBlock = block.getRelative(x, y, z);
 
-                    // Se il blocco vicino è un baule e protetto, ritorna true
-                    if (nearbyBlock.getState() instanceof Chest) {
-                        Chest chest = (Chest) nearbyBlock.getState();
-                        if (isChestProtected(chest)) {
+                    // Se il blocco vicino è un contenitore e protetto, ritorna true
+                    if (nearbyBlock.getState() instanceof Container) {
+                        Container container = (Container) nearbyBlock.getState();
+                        if (isContainerProtected(container)) {
                             return true;
                         }
                     }
@@ -98,19 +101,19 @@ public class CrystalAnchorPlaceEvent implements Listener {
         return false;
     }
 
-    // Metodo che verifica se il baule è protetto tramite un cartello
-    private boolean isChestProtected(Chest chest) {
-        Sign sign = findAttachedSign(chest);
+    // Metodo che verifica se il contenitore è protetto tramite un cartello
+    private boolean isContainerProtected(Container container) {
+        Sign sign = findAttachedSign(container);
         return sign != null && sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")));
     }
 
-    // Metodo che trova il cartello attaccato al baule
-    private Sign findAttachedSign(Chest chest) {
+    // Metodo che trova il cartello attaccato al contenitore
+    private Sign findAttachedSign(Container container) {
         Block[] neighbors = {
-                chest.getBlock().getRelative(1, 0, 0),
-                chest.getBlock().getRelative(-1, 0, 0),
-                chest.getBlock().getRelative(0, 0, 1),
-                chest.getBlock().getRelative(0, 0, -1)
+                container.getBlock().getRelative(1, 0, 0),
+                container.getBlock().getRelative(-1, 0, 0),
+                container.getBlock().getRelative(0, 0, 1),
+                container.getBlock().getRelative(0, 0, -1)
         };
 
         for (Block neighbor : neighbors) {

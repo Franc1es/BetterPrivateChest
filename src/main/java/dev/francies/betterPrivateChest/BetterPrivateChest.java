@@ -44,7 +44,6 @@ public final class BetterPrivateChest extends JavaPlugin {
         this.getLogger().log(Level.INFO, "AUTHOR: " + this.getDescription().getAuthors().get(0));
         this.getLogger().log(Level.INFO, "");
         getServer().getPluginManager().registerEvents(new PrivateChestProtection(this, dataFile), this);
-        getServer().getPluginManager().registerEvents(new HopperProtection(this), this);
         getServer().getPluginManager().registerEvents(new PistonProtection(this, dataFile), this);
         getServer().getPluginManager().registerEvents(new ExplodeProtection(this), this);
         getServer().getPluginManager().registerEvents(new SignProtectionHandler(this), this);
