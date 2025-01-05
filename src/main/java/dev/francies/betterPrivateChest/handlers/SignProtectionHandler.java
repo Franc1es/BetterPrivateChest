@@ -26,7 +26,7 @@ public class SignProtectionHandler implements Listener {
             return;
         }
 
-        if (player.getName().equalsIgnoreCase(ChatColor.stripColor(originalLines[1]))) {
+        if (player.getName().equalsIgnoreCase(ChatColor.stripColor(originalLines[1])) || player.hasPermission("btpchest.admin")) {
             boolean isLine0Modified = !newLines[0].equals(originalLines[0]);
             boolean isLine1Modified = !newLines[1].equals(originalLines[1]);
 

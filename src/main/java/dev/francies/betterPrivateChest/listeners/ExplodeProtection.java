@@ -3,6 +3,7 @@ package dev.francies.betterPrivateChest.listeners;
 import dev.francies.betterPrivateChest.BetterPrivateChest;
 import org.bukkit.ChatColor;
 import org.bukkit.block.*;
+import org.bukkit.block.data.type.Door;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -38,6 +39,10 @@ public class ExplodeProtection implements Listener {
                 if (isSignProtected(sign)) {
                     blocksToProtect.add(block);
                 }
+            } else if (isValidDoor(block)) {
+                if (isDoorProtected(block)) {
+                    blocksToProtect.add(block);
+                }
             }
         }
 
@@ -45,12 +50,17 @@ public class ExplodeProtection implements Listener {
     }
 
     private boolean isContainerProtected(Container container) {
-        Sign sign = findAttachedSign(container);
+        Sign sign = findAttachedSign(container.getBlock());
         return sign != null && sign.getLines()[0].equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")));
     }
 
     private boolean isSignProtected(Sign sign) {
         return sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")));
+    }
+
+    private boolean isDoorProtected(Block block) {
+        Sign sign = findAttachedSign(block);
+        return sign != null && sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")));
     }
 
     private Container findDoubleContainer(Container container) {
@@ -72,12 +82,14 @@ public class ExplodeProtection implements Listener {
         return null;
     }
 
-    private Sign findAttachedSign(Container container) {
+    private Sign findAttachedSign(Block block) {
         Block[] neighbors = {
-                container.getBlock().getRelative(1, 0, 0),
-                container.getBlock().getRelative(-1, 0, 0),
-                container.getBlock().getRelative(0, 0, 1),
-                container.getBlock().getRelative(0, 0, -1)
+                block.getRelative(1, 0, 0),
+                block.getRelative(-1, 0, 0),
+                block.getRelative(0, 0, 1),
+                block.getRelative(0, 0, -1),
+                block.getRelative(0, 1, 0),
+                block.getRelative(0, -1, 0)
         };
 
         for (Block neighbor : neighbors) {
@@ -89,5 +101,9 @@ public class ExplodeProtection implements Listener {
             }
         }
         return null;
+    }
+
+    private boolean isValidDoor(Block block) {
+        return block.getBlockData() instanceof Door;
     }
 }

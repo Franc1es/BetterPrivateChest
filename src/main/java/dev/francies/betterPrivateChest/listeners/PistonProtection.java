@@ -4,6 +4,7 @@ import dev.francies.betterPrivateChest.BetterPrivateChest;
 import dev.francies.betterPrivateChest.utils.DataFile;
 import org.bukkit.ChatColor;
 import org.bukkit.block.*;
+import org.bukkit.block.data.type.Door;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -49,6 +50,10 @@ public class PistonProtection implements Listener {
             return isContainerProtected(container);
         }
 
+        if (isValidDoor(block)) {
+            return isDoorProtected(block);
+        }
+
         Block[] neighbors = {
                 block.getRelative(1, 0, 0),
                 block.getRelative(-1, 0, 0),
@@ -63,6 +68,9 @@ public class PistonProtection implements Listener {
                 if (isContainerProtected(container)) {
                     return true;
                 }
+            }
+            if (isValidDoor(neighbor) && isDoorProtected(neighbor)) {
+                return true;
             }
         }
 
@@ -84,16 +92,23 @@ public class PistonProtection implements Listener {
     }
 
     private boolean isSignAttached(Container container) {
-        Sign sign = findAttachedSign(container);
+        Sign sign = findAttachedSign(container.getBlock());
         return sign != null && sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")));
     }
 
-    private Sign findAttachedSign(Container container) {
+    private boolean isDoorProtected(Block block) {
+        Sign sign = findAttachedSign(block);
+        return sign != null && sign.getLine(0).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("private-chest-id")));
+    }
+
+    private Sign findAttachedSign(Block block) {
         Block[] neighbors = {
-                container.getBlock().getRelative(1, 0, 0),
-                container.getBlock().getRelative(-1, 0, 0),
-                container.getBlock().getRelative(0, 0, 1),
-                container.getBlock().getRelative(0, 0, -1)
+                block.getRelative(1, 0, 0),
+                block.getRelative(-1, 0, 0),
+                block.getRelative(0, 0, 1),
+                block.getRelative(0, 0, -1),
+                block.getRelative(0, 1, 0),
+                block.getRelative(0, -1, 0)
         };
 
         for (Block neighbor : neighbors) {
@@ -105,5 +120,9 @@ public class PistonProtection implements Listener {
             }
         }
         return null;
+    }
+
+    private boolean isValidDoor(Block block) {
+        return block.getBlockData() instanceof Door;
     }
 }

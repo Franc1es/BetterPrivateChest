@@ -96,8 +96,6 @@ public final class BetterPrivateChest extends JavaPlugin {
         return image;
     }
 
-
-
     public void logAsciiArt() {
         String[] lines = printImage().split("\n");
         for (String line : lines) {

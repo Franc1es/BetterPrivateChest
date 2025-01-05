@@ -7,6 +7,8 @@ import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.type.Door;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,9 +47,9 @@ public class SignCreationHandler implements Listener {
         Sign sign = (Sign) block.getState();
 
         if (lines[0].equalsIgnoreCase("[privata]") || lines[0].equalsIgnoreCase("[privato]") || lines[0].equalsIgnoreCase("[private]") || lines[0].equalsIgnoreCase("[priv]")) {
-            Block attachedBlock = block.getRelative(((org.bukkit.block.data.type.WallSign) sign.getBlockData()).getFacing().getOppositeFace());
+            Block attachedBlock = block.getRelative(((WallSign) sign.getBlockData()).getFacing().getOppositeFace());
 
-            if (!(attachedBlock.getState() instanceof Chest || attachedBlock.getState() instanceof Barrel)) {
+            if (!(attachedBlock.getState() instanceof Chest || attachedBlock.getState() instanceof Barrel || isValidDoor(attachedBlock))) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.invalidBlock")));
                 return;
             }
@@ -94,7 +96,9 @@ public class SignCreationHandler implements Listener {
             }
         }
     }
-
+    private boolean isValidDoor(Block block) {
+        return block.getBlockData() instanceof Door;
+    }
     private void saveContainerCreation(Player player, Block containerBlock) {
         FileConfiguration dataConfig = dataFile.getDataConfig();
 
