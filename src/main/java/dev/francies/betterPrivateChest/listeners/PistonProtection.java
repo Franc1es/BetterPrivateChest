@@ -1,7 +1,6 @@
 package dev.francies.betterPrivateChest.listeners;
 
 import dev.francies.betterPrivateChest.BetterPrivateChest;
-import dev.francies.betterPrivateChest.utils.DataFile;
 import org.bukkit.ChatColor;
 import org.bukkit.block.*;
 import org.bukkit.block.data.type.Door;
@@ -15,11 +14,9 @@ import java.util.List;
 
 public class PistonProtection implements Listener {
     private BetterPrivateChest plugin;
-    private final DataFile dataFile;
 
-    public PistonProtection(BetterPrivateChest plugin, DataFile dataFile) {
+    public PistonProtection(BetterPrivateChest plugin) {
         this.plugin = plugin;
-        this.dataFile = dataFile;
     }
 
     @EventHandler

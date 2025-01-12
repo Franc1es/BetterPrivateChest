@@ -1,7 +1,6 @@
 package dev.francies.betterPrivateChest.listeners;
 
 import dev.francies.betterPrivateChest.BetterPrivateChest;
-import dev.francies.betterPrivateChest.utils.DataFile;
 import org.bukkit.ChatColor;
 import org.bukkit.block.*;
 import org.bukkit.block.data.type.Door;
@@ -18,11 +17,10 @@ import java.util.Date;
 
 public class PrivateChestProtection implements Listener {
     private BetterPrivateChest plugin;
-    private final DataFile dataFile;
 
-    public PrivateChestProtection(BetterPrivateChest plugin, DataFile dataFile) {
+
+    public PrivateChestProtection(BetterPrivateChest plugin) {
         this.plugin = plugin;
-        this.dataFile = dataFile;
     }
 
     @EventHandler
@@ -91,7 +89,7 @@ public class PrivateChestProtection implements Listener {
                 return;
             }
 
-            saveContainerDestruction(player, block, "door");
+            // saveContainerDestruction(player, block, "door");
         }
 
         // Gestione dei cartelli
@@ -103,7 +101,7 @@ public class PrivateChestProtection implements Listener {
                 return;
             }
             // Se è consentito distruggerlo, salviamo l’evento di distruzione
-            saveContainerDestruction(player, block, "sign");
+          //  saveContainerDestruction(player, block, "sign");
         }
 
         // Gestione dei contenitori (casse, barili, ecc.)
@@ -121,7 +119,7 @@ public class PrivateChestProtection implements Listener {
                 return;
             }
 
-            saveContainerDestruction(player, container.getBlock(), "container");
+           // saveContainerDestruction(player, container.getBlock(), "container");
         }
     }
 
@@ -188,23 +186,7 @@ public class PrivateChestProtection implements Listener {
         return false;
     }
 
-    private void saveContainerDestruction(Player player, Block block, String type) {
-        FileConfiguration dataConfig = dataFile.getDataConfig();
 
-        String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
-
-        int destructionID = dataConfig.getInt("destructionCounter", 0) + 1;
-        dataConfig.set("destructionCounter", destructionID);
-
-        String blockLocation = block.getLocation().toString();
-        String destructionPath = "destructions.destruction_" + destructionID;
-        dataConfig.set(destructionPath + ".location", blockLocation);
-        dataConfig.set(destructionPath + ".type", type);
-        dataConfig.set(destructionPath + ".destroyed_by", player.getName());
-        dataConfig.set(destructionPath + ".destroyed", formattedDate);
-
-        dataFile.saveDataFile();
-    }
 
     private Container findDoubleContainer(Container container) {
         InventoryHolder holder = container.getInventory().getHolder();

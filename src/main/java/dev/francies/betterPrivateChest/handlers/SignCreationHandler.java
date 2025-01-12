@@ -1,7 +1,6 @@
 package dev.francies.betterPrivateChest.handlers;
 
 import dev.francies.betterPrivateChest.BetterPrivateChest;
-import dev.francies.betterPrivateChest.utils.DataFile;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
@@ -15,18 +14,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Level;
 
 public class SignCreationHandler implements Listener {
     private BetterPrivateChest plugin;
-    private final DataFile dataFile;
 
-    public SignCreationHandler(BetterPrivateChest plugin, DataFile dataFile) {
+    public SignCreationHandler(BetterPrivateChest plugin) {
         this.plugin = plugin;
-        this.dataFile = dataFile;
     }
 
     @EventHandler
@@ -73,7 +68,6 @@ public class SignCreationHandler implements Listener {
 
             if (ChatColor.stripColor(lines[1]).isEmpty()) {
                 String ownerName = player.getName();
-                saveContainerCreation(player, sign.getBlock());
                 if (plugin.getConfig().getString("private-chest-id").isEmpty()) {
                     plugin.getLogger().log(Level.SEVERE, "ATTENTION! CHECK 'private-chest-id' in the config.yml, it may be empty");
                     return;
@@ -98,21 +92,5 @@ public class SignCreationHandler implements Listener {
     }
     private boolean isValidDoor(Block block) {
         return block.getBlockData() instanceof Door;
-    }
-    private void saveContainerCreation(Player player, Block containerBlock) {
-        FileConfiguration dataConfig = dataFile.getDataConfig();
-
-        int chestID = dataConfig.getInt("chestCounter", 0) + 1;
-        dataConfig.set("chestCounter", chestID);
-
-        String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
-
-        String containerLocation = containerBlock.getLocation().toString();
-        String containerPath = "containers.container_" + chestID;
-        dataConfig.set(containerPath + ".location", containerLocation);
-        dataConfig.set(containerPath + ".owner", player.getName());
-        dataConfig.set(containerPath + ".created", formattedDate);
-
-        dataFile.saveDataFile();
     }
 }
