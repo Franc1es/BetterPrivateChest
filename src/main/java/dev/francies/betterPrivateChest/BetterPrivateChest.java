@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import dev.francies.betterPrivateChest.handlers.SignCreationHandler;
 import dev.francies.betterPrivateChest.handlers.SignProtectionHandler;
 import dev.francies.betterPrivateChest.listeners.*;
-import dev.francies.betterPrivateChest.utils.DataFile;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
@@ -22,7 +21,6 @@ import java.net.URL;
 import java.util.logging.Level;
 
 public final class BetterPrivateChest extends JavaPlugin {
-    private DataFile dataFile;
     public static Economy econ = null;
     private final String versionUrl = "https://www.francescoferrara.it/api/betterprivatechest.json";
     @Override
@@ -38,16 +36,14 @@ public final class BetterPrivateChest extends JavaPlugin {
 
         logAsciiArt();
         saveDefaultConfig();
-        this.dataFile = new DataFile(this);
-        dataFile.saveDefaultDataFile();
         this.getLogger().log(Level.INFO, "");
         this.getLogger().log(Level.INFO, "AUTHOR: " + this.getDescription().getAuthors().get(0));
         this.getLogger().log(Level.INFO, "");
-        getServer().getPluginManager().registerEvents(new PrivateChestProtection(this, dataFile), this);
-        getServer().getPluginManager().registerEvents(new PistonProtection(this, dataFile), this);
+        getServer().getPluginManager().registerEvents(new PrivateChestProtection(this), this);
+        getServer().getPluginManager().registerEvents(new PistonProtection(this), this);
         getServer().getPluginManager().registerEvents(new ExplodeProtection(this), this);
         getServer().getPluginManager().registerEvents(new SignProtectionHandler(this), this);
-        getServer().getPluginManager().registerEvents(new SignCreationHandler(this, dataFile), this);
+        getServer().getPluginManager().registerEvents(new SignCreationHandler(this), this);
         getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
         getServer().getPluginManager().registerEvents(new CrystalAnchorPlaceEvent(this), this);
         this.getLogger().log(Level.INFO, "_________________________");
@@ -102,6 +98,7 @@ public final class BetterPrivateChest extends JavaPlugin {
             this.getLogger().info(line);
         }
     }
+
     public void checkForUpdates(Player player) {
 
             try {
