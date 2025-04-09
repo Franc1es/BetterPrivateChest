@@ -4,7 +4,6 @@ import dev.francies.betterPrivateChest.BetterPrivateChest;
 import org.bukkit.ChatColor;
 import org.bukkit.block.*;
 import org.bukkit.block.data.type.Door;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,8 +11,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class PrivateChestProtection implements Listener {
     private BetterPrivateChest plugin;

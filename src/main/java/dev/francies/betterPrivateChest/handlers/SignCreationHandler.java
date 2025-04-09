@@ -41,7 +41,15 @@ public class SignCreationHandler implements Listener {
 
         Sign sign = (Sign) block.getState();
 
+        // Verifica se è un cartello a muro
+        if (!(block.getBlockData() instanceof WallSign)) {
+            // Se non è un cartello a muro, annulla l'evento e invia un messaggio
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix-private") + " " + plugin.getConfig().getString("private-chest.creationError")));
+            return;
+        }
+
         if (lines[0].equalsIgnoreCase("[privata]") || lines[0].equalsIgnoreCase("[privato]") || lines[0].equalsIgnoreCase("[private]") || lines[0].equalsIgnoreCase("[priv]")) {
+
             Block attachedBlock = block.getRelative(((WallSign) sign.getBlockData()).getFacing().getOppositeFace());
 
             if (!(attachedBlock.getState() instanceof Chest || attachedBlock.getState() instanceof Barrel || isValidDoor(attachedBlock))) {

@@ -26,3 +26,4 @@ private-chest:
   insufficient-funds: "&cYou do not have enough money to create a private chest."
   chest-purchased: "&aYou have been charged %amount% for creating a private chest." # %amount%
   block-place-denied-message: "&cYou cannot place %block% near a private chest!"  # %block%
+  creationError: "&cThe sign need to be placed on the chest!"
