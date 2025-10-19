@@ -1,5 +1,5 @@
 name: BetterPrivateChest
-version: '1.2.6'
+version: '1.2.8'
 main: dev.francies.betterPrivateChest.BetterPrivateChest
 api-version: '1.21'
 prefix: BTPChest

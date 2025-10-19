@@ -21,7 +21,7 @@ public class PlayerLoginListener implements Listener {
         if (player.hasPermission("btpchest.admin")) {
 
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                plugin.checkForUpdates(player);
+              //  plugin.checkForUpdates(player);
             }, 60L);
         }
     }

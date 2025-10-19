@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 public final class BetterPrivateChest extends JavaPlugin {
     public static Economy econ = null;
-    private final String versionUrl = "https://www.francescoferrara.it/api/betterprivatechest.json";
+    //private final String versionUrl = "https://www.francescoferrara.it/api/betterprivatechest.json";
     @Override
     public void onEnable() {
         int pluginId = 23325;
@@ -44,7 +44,7 @@ public final class BetterPrivateChest extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ExplodeProtection(this), this);
         getServer().getPluginManager().registerEvents(new SignProtectionHandler(this), this);
         getServer().getPluginManager().registerEvents(new SignCreationHandler(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
+       // getServer().getPluginManager().registerEvents(new PlayerLoginListener(this), this);
         getServer().getPluginManager().registerEvents(new CrystalAnchorPlaceEvent(this), this);
         this.getLogger().log(Level.INFO, "_________________________");
         this.getLogger().log(Level.INFO, "Loaded in " + (System.currentTimeMillis() - t) + "ms");
@@ -99,7 +99,7 @@ public final class BetterPrivateChest extends JavaPlugin {
         }
     }
 
-    public void checkForUpdates(Player player) {
+    /*public void checkForUpdates(Player player) {
 
             try {
 
@@ -138,5 +138,5 @@ public final class BetterPrivateChest extends JavaPlugin {
                 e.printStackTrace();
             }
     }
-
+*/
 }
